@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style>
+        /* HOME Tab css For Displaying Clock */
+        ul.digital-clock li {
+            display: inline-block;
+        }
+
+        ul.digital-clock .seprater-li {
+            font-size: 90px;
+        }
+
+        ul.digital-clock .content-li {
+            width: 20%;
+            border: 2px solid #ccc;
+            height: 150px;
+            font-size: 90px;
+            margin: 0 auto;
+            padding: 0px;
+            text-align: center;
+        }
+
+        .displayCurrentDate {
+            font-size: 40px;
+            padding-left: 40px;
+        }
+    </style>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <script src="/js/moment.min.js"></script>
+    <script src="/js/common.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="home.html" class="nav-btn active">HOME</a>
+        <a href="alarmList.html" class="nav-btn">ALARM LIST</a>
+        <a href="alarm.html" class="nav-btn">ADD/EDIT ALARM</a>
+    </header>
+
+    <div class="displayCurrentDate">
+
+    </div>
+
+    <div>
+        <ul class="digital-clock">
+            <li class="content-li">
+                <div class="hours li-inner">
+                    00
+                </div>
+            </li>
+            <li class="seprater-li">
+                :
+            </li>
+            <li class="content-li">
+                <div class="minutes li-inner">
+                    00
+                </div>
+            </li>
+            <li class="seprater-li">
+                :
+            </li>
+            <li class="content-li">
+                <div class="seconds li-inner">
+                    00
+                </div>
+            </li>
+            <li class="seprater-li">
+                :
+            </li>
+            <li class="content-li">
+                <div class="amPm li-inner">
+                    AM
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="alarmTitle"></h3>
+            <button class="snoozeAlarm">Snooze</button>
+            <button class="stopAlarm">Stop</button>
+        </div>
+
+    </div>
+
+
+    <script>
+        // To Display Current Date In Div.
+        function dateDisplay() {
+            document.querySelector('.displayCurrentDate').textContent = moment().format('LL');
+        }
+
+        function timerDisplay() {
+            // Get Hours, Minutes, Seconds Values.
+            let hours = (new Date().getHours() >= 12) ? (new Date().getHours() - 12) : new Date().getHours();
+            let minutes = new Date().getMinutes();
+            let seconds = new Date().getSeconds();
+            let interval = (new Date().getHours() >= 12) ? "PM" : "AM";
+
+            // Display Hours, Minutes, Seconds Values.
+            document.querySelector('.hours').textContent = ("00" + hours).slice(-2);
+            document.querySelector('.minutes').textContent = ("00" + minutes).slice(-2);
+            document.querySelector('.seconds').textContent = ("00" + seconds).slice(-2);
+            document.querySelector('.amPm').textContent = interval;
+        }
+
+        setInterval(function () {
+            timerDisplay();
+        }, 500);
+
+        dateDisplay();
+        timerDisplay();
+    </script>
+</body>
+
+</html>

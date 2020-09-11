@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <script src="/js/common.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="home.html" class="nav-btn">HOME</a>
+        <a href="alarmList.html" class="nav-btn active">ALARM LIST</a>
+        <a href="alarm.html" class="nav-btn">ADD/EDIT ALARM</a>
+    </header>
+
+    <div>
+        <ul class="liAppendData">
+
+        </ul>
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="alarmTitle"></h3>
+            <button class="snoozeAlarm">Snooze</button>
+            <button class="stopAlarm">Stop</button>
+        </div>
+
+    </div>
+
+    <script>
+        function init() {
+            var data = (localStorage.alarmList) ? JSON.parse(localStorage.alarmList) : [];
+            console.log("Data Binding In ALARM LIST Tab", data);
+
+            var str = ``;
+            if (data.length > 0) {
+                for (var i = 0; i < data.length; i++) {
+                    str += `<li>
+                        <div>
+                            <h4>${data[i].time}</h4>
+                            <span><strong>${data[i].labelName}</strong></span>
+                                <a href="alarm.html?ts=${data[i].ts}"><button>EDIT</button></a>
+                                <button onclick="removeAlarm(${data[i].ts})">REMOVE</button>
+                                <button onclick="stopAlarm(${data[i].ts})">STOP</button>
+                        </div>
+                    </li>`;
+                }
+            } else {
+                str +=
+                    `<li>No Alarm Found In
+                        <strong>ALARM LIST Tab.</strong> 
+                        <br>Please Set Alarm First By Clicking <strong> ADD/EDIT ALARM Tab.</strong>
+                    </li>`
+            }
+            document.querySelector('.liAppendData').innerHTML = str;
+        }
+
+        // function stopAlarm(val) {
+        //     var arr = JSON.parse(localStorage.alarmList);
+        //     var ob = {};
+        //     for (var i = 0; i < arr.length; i++) {
+        //         if (arr[i].ts == val) {
+        //             ob = JSON.parse(JSON.stringify(arr[i]));
+        //             arr.splice(i, 1);
+        //             alert("Alarm Stoped Successfully");
+        //         }
+        //     }
+        //     ob.isActive = false;
+        //     arr.push(ob);
+        //     localStorage.alarmList = JSON.stringify(arr);
+        //     init();
+        // }
+
+        function removeAlarm(val) {
+            // Get Alarm List Data From Local Storage. 
+            var arr = JSON.parse(localStorage.alarmList);
+
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i].ts == val) {
+                    arr.splice(i, 1);
+                    alert("Alarm Remove Successfully");
+                }
+            }
+
+            // Set New Arr To Local Storage.
+            localStorage.alarmList = JSON.stringify(arr);
+
+            init();
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

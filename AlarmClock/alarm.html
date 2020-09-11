@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/form.css">
+    <script src="/js/common.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="home.html" class="nav-btn">HOME</a>
+        <a href="alarmList.html" class="nav-btn">ALARM LIST</a>
+        <a href="alarm.html" class="nav-btn active">ADD/EDIT ALARM</a>
+    </header>
+
+    <form class="form">
+        <!-- For Storing ts TimeStamp Value To Edit Form -->
+        <input type="hidden" class="ts" value="" />
+
+        <label for="dateTime">Select Time</label>
+        <input type="time" id="dateTime" name="dateTime">
+
+        <label for="lname">Label</label>
+        <input type="text" id="lname" name="labelName" placeholder="Enter Label For Alarm">
+
+        <div>
+            <label for="snooze">Snooze</label>
+            <input type="checkbox" id="isSnooze">
+        </div>
+
+        <div>
+            <label for="repeat">Repeat</label><br>
+            <input type="checkbox" class="alarmDays" value="Monday" />Monday
+            <input type="checkbox" class="alarmDays" value="Tuesday" />Tuesday
+            <input type="checkbox" class="alarmDays" value="Wednesday" />Wednesday
+            <input type="checkbox" class="alarmDays" value="Thursday" />Thursday
+            <input type="checkbox" class="alarmDays" value="Friday" />Friday
+            <input type="checkbox" class="alarmDays" value="Saturday" />Saturday
+            <input type="checkbox" class="alarmDays" value="Sunday" />Sunday
+        </div>
+
+        <input type="button" onclick="saveAlarm();" value="Save Alarm">
+
+    </form>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="alarmTitle"></h3>
+            <button class="snoozeAlarm">Snooze</button>
+            <button class="stopAlarm">Stop</button>
+        </div>
+
+    </div>
+
+
+    <script>
+        // Save Alarm Object To Browsers LocalStorage.
+        function saveAlarm() {
+            var obj = {};
+            obj.time = document.querySelector('#dateTime').value;
+            obj.labelName = document.querySelector('#lname').value;
+            obj.isSnooze = document.querySelector('#isSnooze').checked;
+            obj.snoozeTime = "01";
+            obj.isActive = true;
+            obj.days = [];
+
+            var daysArr = document.querySelectorAll('.alarmDays'); // To Get All Selected Days
+            for (var i = 0; i < daysArr.length; i++) {
+                if (daysArr[i].checked) {
+                    obj.days.push(daysArr[i].value);
+                }
+            }
+
+            obj.alarmTitle = (obj.days.length === 7) ? "Repeat" : "";
+
+            if (obj.days.length <= 2) {
+                if (obj.days.indexOf("Saturday") > -1 && obj.days.indexOf("Sunday") > -1) {
+                    obj.alarmTitle = "Weekend";
+                } else {
+                    if (obj.days.indexOf("Monday") > -1 || obj.days.indexOf("Tuesday") > -1 ||
+                        obj.days.indexOf("Wednesday") > -1 || obj.days.indexOf("Thursday") > -1 ||
+                        obj.days.indexOf("Friday") > -1) {
+                        obj.alarmTitle = "Weekdays";
+                    } else {
+                        obj.alarmTitle = "Weekdays";
+                    }
+                }
+            }
+
+            var isEdit = false;
+            if (document.querySelector('.ts').value == "") {
+                obj.ts = Math.round(new Date().getTime() / 1000);
+            } else {
+                isEdit = true;
+                obj.ts = parseInt(document.querySelector('.ts').value);
+            }
+
+
+            if (localStorage.alarmList) {
+                var arr = JSON.parse(localStorage.alarmList);
+                if (isEdit) {
+                    var arr = JSON.parse(localStorage.alarmList);
+                    for (var i = 0; i < arr.length; i++) {
+                        if (arr[i].ts === obj.ts) {
+                            arr.splice(i, 1);
+                        }
+                    }
+                    arr.push(obj);
+                } else {
+                    obj.snoozeTime = "05";
+                    obj.isActive = true;
+                    arr.push(obj);
+                }
+                localStorage.alarmList = JSON.stringify(arr);
+            } else {
+                localStorage.setItem('alarmList', JSON.stringify([obj]));
+            }
+            alert("Alarm " + ((isEdit) ? 'Edited' : 'Added') + " Successfully");
+
+            // console.log("Saving Obj For Alarm : - ", obj);
+            window.location.href = "alarm.html";
+        }
+
+        // 
+        function setAlarm() {
+            if (localStorage.alarmList) {
+                var ts = 0;
+                if (window.location.search != "") {
+
+                    var temp = window.location.search.split("?")[1].split('&');
+                    for (var i = 0; i < temp.length; i++) {
+                        if (temp[i].indexOf("ts") > -1) {
+                            ts = temp[i].split("=")[1];
+                        }
+                    }
+                }
+
+                // Get LocalStorage Data For Populate 
+                var arr = JSON.parse(localStorage.alarmList);
+                var data = {};
+                for (var i = 0; i < arr.length; i++) {
+                    if (arr[i].ts == ts) {
+                        data = arr[i];
+                    }
+                }
+
+                // Populate Data. 
+                document.querySelector('#dateTime').value = data.time;
+                document.querySelector('#lname').value = data.labelName ? data.labelName : "";
+                document.querySelector('#isSnooze').checked = data.isSnooze;
+                // Populate Selected Days Data.
+                if (data.days) {
+                    for (var i = 0; i < data.days.length; i++) {
+                        document.querySelector('input[value="' + data.days[i] + '"]').checked = true;
+                    }
+                }
+                document.querySelector('.ts').value = data.ts ? data.ts : "";
+                // Populate Data Completed.
+            }
+        }
+
+        setAlarm();
+    </script>
+
+</body>
+
+</html>
